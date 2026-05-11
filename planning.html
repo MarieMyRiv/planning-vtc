@@ -1,765 +1,736 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.5px 'Helvetica Neue'; color: #2a2a27; -webkit-text-stroke: #2a2a27}
-    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.5px 'Helvetica Neue'; color: #0f0f0f; -webkit-text-stroke: #0f0f0f; min-height: 12.0px}
-    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #0f0f0f; -webkit-text-stroke: #0f0f0f; min-height: 15.0px}
-    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #0f0f0f; -webkit-text-stroke: #0f0f0f; background-color: #fcfdfb; min-height: 15.0px}
-    span.s1 {font: 10.5px 'Helvetica Neue'; font-kerning: none; color: #2a2a27; background-color: #fcfdfb; -webkit-text-stroke: 0px #2a2a27}
-    span.s2 {font-kerning: none; background-color: #fcfdfb}
-    span.s3 {font-kerning: none}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planning VTC — MY Riviera</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5}
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.cal-wrap{flex:0 0 auto;border-bottom:1px solid #e5e7eb;background:#fff}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:6px 12px}
+.cal-month-label{font-size:14px;font-weight:500;color:#374151}
+.cal-nav-btn{background:none;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;padding:2px 9px;font-size:14px;color:#374151}
+.cal-nav-btn:hover{background:#f9fafb}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0 8px 6px;gap:1px}
+.cal-day-hdr{text-align:center;font-size:10px;font-weight:500;color:#9ca3af;padding:2px 0}
+.cal-day{border-radius:5px;cursor:pointer;padding:2px;display:flex;flex-direction:column;align-items:center;gap:1px}
+.cal-day:hover{background:#f3f4f6}
+.cal-day.other{opacity:0.3}
+.cal-day.today .cal-num{background:#1a6ab5;color:#fff;border-radius:50%}
+.cal-day.selected{background:#dbeafe}
+.cal-day.selected .cal-num{color:#1e40af;font-weight:600}
+.cal-num{font-size:11px;color:#374151;width:18px;height:18px;display:flex;align-items:center;justify-content:center}
+.cal-dots{display:flex;gap:1px;justify-content:center;flex-wrap:wrap;max-width:28px}
+.cal-dot{width:4px;height:4px;border-radius:50%}
+.nav-bar{display:flex;align-items:center;padding:6px 12px;background:#fff;border-bottom:1px solid #e5e7eb;flex-shrink:0;gap:8px}
+.nav-left{flex:1;display:flex;justify-content:flex-start;gap:6px;align-items:center}
+.nav-center{display:flex;align-items:center;gap:5px}
+.nav-right{flex:1;display:flex;justify-content:flex-end;align-items:center}
+.nav-date{font-size:13px;font-weight:500;color:#374151;white-space:nowrap}
+.btn{padding:4px 10px;border:1px solid #e5e7eb;border-radius:7px;background:transparent;cursor:pointer;font-size:12px;color:#374151;white-space:nowrap}
+.btn:hover{background:#f9fafb}
+.btn.active{background:#1a6ab5;color:#fff;border-color:#1a6ab5}
+.legend{display:flex;gap:8px;padding:5px 12px;background:#fff;border-bottom:1px solid #e5e7eb;flex-wrap:wrap;align-items:center;flex-shrink:0}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#6b7280}
+.leg-dot{width:12px;height:12px;border-radius:3px}
+.view-area{flex:1;overflow:auto;min-height:0}
+.now-line{position:absolute;left:0;right:0;height:2px;background:#ef4444;z-index:10;pointer-events:none}
+.now-dot{position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:#ef4444}
+.ev-block{position:absolute;border-radius:5px;overflow:hidden;cursor:pointer;z-index:5;display:flex;flex-direction:column}
+.ev-block:hover{opacity:.87;z-index:15}
+.ev-hdr{display:flex;justify-content:space-between;align-items:center;padding:3px 6px;flex-shrink:0}
+.ev-type{font-size:10px;font-weight:700;color:#fff}
+.ev-times{font-size:10px;font-weight:500;color:#fff}
+.ev-body{padding:3px 5px 4px;flex:1;overflow:hidden;display:flex;flex-direction:column;gap:2px}
+.ev-row{display:flex;align-items:baseline;gap:3px;font-size:10px;line-height:1.3}
+.ev-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.ev-client-row{display:flex;align-items:center;gap:3px;width:100%}
+.ev-client-name{font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.ev-pax-box{text-align:center;border-radius:4px;padding:1px 2px;font-size:10px;font-weight:700;flex-shrink:0;min-width:16px}
+.ev-note{margin:2px 0;padding:2px 4px;border-radius:4px;font-size:9px;font-style:italic;line-height:1.3;border-left:2px solid rgba(0,0,0,0.2)}
+.ev-agence{padding:2px 4px;border-radius:3px;font-size:9px;font-weight:500;border-left:2px solid rgba(0,0,0,0.25);margin-top:1px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;width:480px;max-width:96vw;max-height:92vh;overflow-y:auto}
+.modal-hdr{padding:13px 16px 11px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:5;border-radius:14px 14px 0 0}
+.modal-title{font-size:15px;font-weight:500}
+.modal-close{background:none;border:none;cursor:pointer;font-size:20px;color:#9ca3af}
+.modal-body{padding:13px 16px}
+.msec{margin-bottom:13px}
+.msec-title{font-size:10px;font-weight:500;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+.admin-box{background:#f5f4f0;border-radius:8px;padding:11px;margin-bottom:13px}
+.admin-title{font-size:10px;font-weight:500;color:#5f5e5a;margin-bottom:9px}
+.fg{display:grid;gap:8px;margin-bottom:8px}
+.fg.c1{grid-template-columns:1fr}
+.fg.c2{grid-template-columns:1fr 1fr}
+.fg.c3{grid-template-columns:1fr 1fr 1fr}
+.fg.c31{grid-template-columns:3fr 1fr}
+.flabel{font-size:11px;color:#6b7280;margin-bottom:3px}
+.finput{width:100%;padding:6px 8px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;color:#374151;font-size:13px}
+.finput:focus{outline:none;border-color:#1a6ab5}
+.finput-pax{width:100%;padding:6px 8px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;color:#374151;font-size:13px}
+textarea.finput{resize:vertical;min-height:48px;font-family:inherit}
+.marge-val{font-size:17px;font-weight:500;padding:5px 0;color:#059669}
+.check-group{display:flex;gap:12px;margin-top:4px}
+.check-item{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer}
+.check-item input{width:15px;height:15px;cursor:pointer;accent-color:#1a6ab5}
+.modal-footer{display:flex;justify-content:space-between;padding:11px 16px;border-top:1px solid #e5e7eb;position:sticky;bottom:0;background:#fff;border-radius:0 0 14px 14px}
+.btn-del{padding:5px 13px;border-radius:7px;border:1px solid #fca5a5;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:13px}
+.btn-save{padding:5px 15px;border-radius:7px;border:none;background:#1a6ab5;color:#fff;cursor:pointer;font-size:13px;font-weight:500}
+.btn-cancel{padding:5px 13px;border-radius:7px;border:1px solid #e5e7eb;background:transparent;color:#374151;cursor:pointer;font-size:13px}
+.divider{height:1px;background:#e5e7eb;margin:10px 0}
+.admin-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.admin-col-title{font-size:10px;font-weight:500;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.inline-label{font-size:11px;color:#6b7280;margin-bottom:3px;font-weight:500}
+.search-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;align-items:flex-start;justify-content:center;padding-top:60px}
+.search-bg.open{display:flex}
+.search-panel{background:#fff;border-radius:14px;width:560px;max-width:96vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.search-hdr{padding:14px 16px 12px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:10px}
+.search-input{flex:1;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;outline:none}
+.search-input:focus{border-color:#1a6ab5}
+.search-close{background:none;border:none;cursor:pointer;font-size:20px;color:#9ca3af}
+.search-period{padding:8px 16px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f9fafb}
+.period-btn{padding:3px 10px;border-radius:20px;border:1px solid #e5e7eb;background:transparent;cursor:pointer;font-size:11px;color:#6b7280}
+.period-btn.active{background:#1a6ab5;color:#fff;border-color:#1a6ab5}
+.period-date-input{padding:4px 7px;border:1px solid #e5e7eb;border-radius:7px;font-size:12px}
+.search-count{padding:4px 16px 8px;font-size:11px;color:#6b7280}
+.search-results{flex:1;overflow-y:auto;padding:8px 0}
+.search-empty{padding:24px;text-align:center;color:#9ca3af;font-size:13px}
+.result-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;border-bottom:1px solid #f3f4f6}
+.result-item:hover{background:#f9fafb}
+.result-color{width:4px;border-radius:2px;align-self:stretch;flex-shrink:0}
+.result-main{flex:1;min-width:0}
+.result-top{display:flex;align-items:center;gap:6px;margin-bottom:2px;flex-wrap:wrap}
+.result-type{font-size:11px;font-weight:600;color:#374151}
+.result-date{font-size:11px;color:#6b7280}
+.result-driver{font-size:10px;padding:1px 7px;border-radius:10px;font-weight:500}
+.result-client{font-size:12px;font-weight:500;color:#374151}
+.result-sub{font-size:11px;color:#9ca3af;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.highlight{background:#fef08a;border-radius:2px;padding:0 1px}
+.saving{position:fixed;bottom:16px;right:16px;background:#1a6ab5;color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;z-index:400;display:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.saving.show{display:block}
+.sync-indicator{font-size:11px;color:#6b7280;display:flex;align-items:center;gap:4px}
+</style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="fr"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1">&lt;title&gt;Planning VTC — MY Riviera&lt;/title&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1">*{box-sizing:border-box;margin:0;padding:0}</p>
-<p class="p1">body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5}</p>
-<p class="p1">.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}</p>
-<p class="p1">.cal-wrap{flex:0 0 auto;border-bottom:1px solid #e5e7eb;background:#fff}</p>
-<p class="p1">.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:6px 12px}</p>
-<p class="p1">.cal-month-label{font-size:14px;font-weight:500;color:#374151}</p>
-<p class="p1">.cal-nav-btn{background:none;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;padding:2px 9px;font-size:14px;color:#374151}</p>
-<p class="p1">.cal-nav-btn:hover{background:#f9fafb}</p>
-<p class="p1">.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0 8px 6px;gap:1px}</p>
-<p class="p1">.cal-day-hdr{text-align:center;font-size:10px;font-weight:500;color:#9ca3af;padding:2px 0}</p>
-<p class="p1">.cal-day{border-radius:5px;cursor:pointer;padding:2px;display:flex;flex-direction:column;align-items:center;gap:1px}</p>
-<p class="p1">.cal-day:hover{background:#f3f4f6}</p>
-<p class="p1">.cal-day.other{opacity:0.3}</p>
-<p class="p1">.cal-day.today .cal-num{background:#1a6ab5;color:#fff;border-radius:50%}</p>
-<p class="p1">.cal-day.selected{background:#dbeafe}</p>
-<p class="p1">.cal-day.selected .cal-num{color:#1e40af;font-weight:600}</p>
-<p class="p1">.cal-num{font-size:11px;color:#374151;width:18px;height:18px;display:flex;align-items:center;justify-content:center}</p>
-<p class="p1">.cal-dots{display:flex;gap:1px;justify-content:center;flex-wrap:wrap;max-width:28px}</p>
-<p class="p1">.cal-dot{width:4px;height:4px;border-radius:50%}</p>
-<p class="p1">.nav-bar{display:flex;align-items:center;padding:6px 12px;background:#fff;border-bottom:1px solid #e5e7eb;flex-shrink:0;gap:8px}</p>
-<p class="p1">.nav-left{flex:1;display:flex;justify-content:flex-start;gap:6px;align-items:center}</p>
-<p class="p1">.nav-center{display:flex;align-items:center;gap:5px}</p>
-<p class="p1">.nav-right{flex:1;display:flex;justify-content:flex-end;align-items:center}</p>
-<p class="p1">.nav-date{font-size:13px;font-weight:500;color:#374151;white-space:nowrap}</p>
-<p class="p1">.btn{padding:4px 10px;border:1px solid #e5e7eb;border-radius:7px;background:transparent;cursor:pointer;font-size:12px;color:#374151;white-space:nowrap}</p>
-<p class="p1">.btn:hover{background:#f9fafb}</p>
-<p class="p1">.btn.active{background:#1a6ab5;color:#fff;border-color:#1a6ab5}</p>
-<p class="p1">.legend{display:flex;gap:8px;padding:5px 12px;background:#fff;border-bottom:1px solid #e5e7eb;flex-wrap:wrap;align-items:center;flex-shrink:0}</p>
-<p class="p1">.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#6b7280}</p>
-<p class="p1">.leg-dot{width:12px;height:12px;border-radius:3px}</p>
-<p class="p1">.view-area{flex:1;overflow:auto;min-height:0}</p>
-<p class="p1">.now-line{position:absolute;left:0;right:0;height:2px;background:#ef4444;z-index:10;pointer-events:none}</p>
-<p class="p1">.now-dot{position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:#ef4444}</p>
-<p class="p1">.ev-block{position:absolute;border-radius:5px;overflow:hidden;cursor:pointer;z-index:5;display:flex;flex-direction:column}</p>
-<p class="p1">.ev-block:hover{opacity:.87;z-index:15}</p>
-<p class="p1">.ev-hdr{display:flex;justify-content:space-between;align-items:center;padding:3px 6px;flex-shrink:0}</p>
-<p class="p1">.ev-type{font-size:10px;font-weight:700;color:#fff}</p>
-<p class="p1">.ev-times{font-size:10px;font-weight:500;color:#fff}</p>
-<p class="p1">.ev-body{padding:3px 5px 4px;flex:1;overflow:hidden;display:flex;flex-direction:column;gap:2px}</p>
-<p class="p1">.ev-row{display:flex;align-items:baseline;gap:3px;font-size:10px;line-height:1.3}</p>
-<p class="p1">.ev-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}</p>
-<p class="p1">.ev-client-row{display:flex;align-items:center;gap:3px;width:100%}</p>
-<p class="p1">.ev-client-name{font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}</p>
-<p class="p1">.ev-pax-box{text-align:center;border-radius:4px;padding:1px 2px;font-size:10px;font-weight:700;flex-shrink:0;min-width:16px}</p>
-<p class="p1">.ev-note{margin:2px 0;padding:2px 4px;border-radius:4px;font-size:9px;font-style:italic;line-height:1.3;border-left:2px solid rgba(0,0,0,0.2)}</p>
-<p class="p1">.ev-agence{padding:2px 4px;border-radius:3px;font-size:9px;font-weight:500;border-left:2px solid rgba(0,0,0,0.25);margin-top:1px}</p>
-<p class="p1">.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}</p>
-<p class="p1">.overlay.open{display:flex}</p>
-<p class="p1">.modal{background:#fff;border-radius:14px;width:480px;max-width:96vw;max-height:92vh;overflow-y:auto}</p>
-<p class="p1">.modal-hdr{padding:13px 16px 11px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:5;border-radius:14px 14px 0 0}</p>
-<p class="p1">.modal-title{font-size:15px;font-weight:500}</p>
-<p class="p1">.modal-close{background:none;border:none;cursor:pointer;font-size:20px;color:#9ca3af}</p>
-<p class="p1">.modal-body{padding:13px 16px}</p>
-<p class="p1">.msec{margin-bottom:13px}</p>
-<p class="p1">.msec-title{font-size:10px;font-weight:500;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}</p>
-<p class="p1">.admin-box{background:#f5f4f0;border-radius:8px;padding:11px;margin-bottom:13px}</p>
-<p class="p1">.admin-title{font-size:10px;font-weight:500;color:#5f5e5a;margin-bottom:9px}</p>
-<p class="p1">.fg{display:grid;gap:8px;margin-bottom:8px}</p>
-<p class="p1">.fg.c1{grid-template-columns:1fr}</p>
-<p class="p1">.fg.c2{grid-template-columns:1fr 1fr}</p>
-<p class="p1">.fg.c3{grid-template-columns:1fr 1fr 1fr}</p>
-<p class="p1">.fg.c31{grid-template-columns:3fr 1fr}</p>
-<p class="p1">.flabel{font-size:11px;color:#6b7280;margin-bottom:3px}</p>
-<p class="p1">.finput{width:100%;padding:6px 8px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;color:#374151;font-size:13px}</p>
-<p class="p1">.finput:focus{outline:none;border-color:#1a6ab5}</p>
-<p class="p1">.finput-pax{width:100%;padding:6px 8px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;color:#374151;font-size:13px}</p>
-<p class="p1">textarea.finput{resize:vertical;min-height:48px;font-family:inherit}</p>
-<p class="p1">.marge-val{font-size:17px;font-weight:500;padding:5px 0;color:#059669}</p>
-<p class="p1">.check-group{display:flex;gap:12px;margin-top:4px}</p>
-<p class="p1">.check-item{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer}</p>
-<p class="p1">.check-item input{width:15px;height:15px;cursor:pointer;accent-color:#1a6ab5}</p>
-<p class="p1">.modal-footer{display:flex;justify-content:space-between;padding:11px 16px;border-top:1px solid #e5e7eb;position:sticky;bottom:0;background:#fff;border-radius:0 0 14px 14px}</p>
-<p class="p1">.btn-del{padding:5px 13px;border-radius:7px;border:1px solid #fca5a5;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:13px}</p>
-<p class="p1">.btn-save{padding:5px 15px;border-radius:7px;border:none;background:#1a6ab5;color:#fff;cursor:pointer;font-size:13px;font-weight:500}</p>
-<p class="p1">.btn-cancel{padding:5px 13px;border-radius:7px;border:1px solid #e5e7eb;background:transparent;color:#374151;cursor:pointer;font-size:13px}</p>
-<p class="p1">.divider{height:1px;background:#e5e7eb;margin:10px 0}</p>
-<p class="p1">.admin-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}</p>
-<p class="p1">.admin-col-title{font-size:10px;font-weight:500;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}</p>
-<p class="p1">.inline-label{font-size:11px;color:#6b7280;margin-bottom:3px;font-weight:500}</p>
-<p class="p1">.search-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;align-items:flex-start;justify-content:center;padding-top:60px}</p>
-<p class="p1">.search-bg.open{display:flex}</p>
-<p class="p1">.search-panel{background:#fff;border-radius:14px;width:560px;max-width:96vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2)}</p>
-<p class="p1">.search-hdr{padding:14px 16px 12px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:10px}</p>
-<p class="p1">.search-input{flex:1;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;outline:none}</p>
-<p class="p1">.search-input:focus{border-color:#1a6ab5}</p>
-<p class="p1">.search-close{background:none;border:none;cursor:pointer;font-size:20px;color:#9ca3af}</p>
-<p class="p1">.search-period{padding:8px 16px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f9fafb}</p>
-<p class="p1">.period-btn{padding:3px 10px;border-radius:20px;border:1px solid #e5e7eb;background:transparent;cursor:pointer;font-size:11px;color:#6b7280}</p>
-<p class="p1">.period-btn.active{background:#1a6ab5;color:#fff;border-color:#1a6ab5}</p>
-<p class="p1">.period-date-input{padding:4px 7px;border:1px solid #e5e7eb;border-radius:7px;font-size:12px}</p>
-<p class="p1">.search-count{padding:4px 16px 8px;font-size:11px;color:#6b7280}</p>
-<p class="p1">.search-results{flex:1;overflow-y:auto;padding:8px 0}</p>
-<p class="p1">.search-empty{padding:24px;text-align:center;color:#9ca3af;font-size:13px}</p>
-<p class="p1">.result-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;border-bottom:1px solid #f3f4f6}</p>
-<p class="p1">.result-item:hover{background:#f9fafb}</p>
-<p class="p1">.result-color{width:4px;border-radius:2px;align-self:stretch;flex-shrink:0}</p>
-<p class="p1">.result-main{flex:1;min-width:0}</p>
-<p class="p1">.result-top{display:flex;align-items:center;gap:6px;margin-bottom:2px;flex-wrap:wrap}</p>
-<p class="p1">.result-type{font-size:11px;font-weight:600;color:#374151}</p>
-<p class="p1">.result-date{font-size:11px;color:#6b7280}</p>
-<p class="p1">.result-driver{font-size:10px;padding:1px 7px;border-radius:10px;font-weight:500}</p>
-<p class="p1">.result-client{font-size:12px;font-weight:500;color:#374151}</p>
-<p class="p1">.result-sub{font-size:11px;color:#9ca3af;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}</p>
-<p class="p1">.highlight{background:#fef08a;border-radius:2px;padding:0 1px}</p>
-<p class="p1">.saving{position:fixed;bottom:16px;right:16px;background:#1a6ab5;color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;z-index:400;display:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}</p>
-<p class="p1">.saving.show{display:block}</p>
-<p class="p1">.sync-indicator{font-size:11px;color:#6b7280;display:flex;align-items:center;gap:4px}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1">&lt;div class="app"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="cal-wrap"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="cal-nav"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="cal-nav-btn" onclick="calNav(-1)"&gt;‹&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="cal-month-label" id="cal-label"&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="cal-nav-btn" onclick="calNav(1)"&gt;›&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="cal-grid" id="cal-grid"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="nav-bar"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="nav-left"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button onclick="openNew()" style="background-color:#FF1493;color:#fff;border:2px solid #FF1493;border-radius:8px;font-weight:700;font-size:14px;padding:7px 20px;cursor:pointer;box-shadow:0 2px 10px rgba(255,20,147,0.5);white-space:nowrap;"&gt;+ Ajouter&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button onclick="openSearch()" style="background:transparent;border:1px solid #e5e7eb;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:16px;"&gt;🔍&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="sync-indicator" id="sync-status"&gt;⏳ Chargement...&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="nav-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn" onclick="goToday()"&gt;Aujourd'hui&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn" id="vbtn-3" onclick="setView(3)"&gt;3J&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn" id="vbtn-7" onclick="setView(7)"&gt;7J&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn" id="vbtn-30" onclick="setView(30)"&gt;Mois&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="nav-right"&gt;&lt;span class="nav-date" id="nav-date"&gt;&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="legend" id="legend"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="view-area" id="view-area"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- SEARCH --&gt;</p>
-<p class="p1">&lt;div class="search-bg" id="search-bg" onclick="if(event.target===this)closeSearch()"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="search-panel"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="search-hdr"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span&gt;🔍&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;input class="search-input" id="search-input" placeholder="Client, chauffeur, agence, lieu, type..." oninput="doSearch()" autocomplete="off"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="search-close" onclick="closeSearch()"&gt;×&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="search-period"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span style="font-size:11px;color:#6b7280"&gt;Période :&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="period-btn active" id="pbtn-all" onclick="setPeriod('all')"&gt;Toutes les dates&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="period-btn" id="pbtn-custom" onclick="setPeriod('custom')"&gt;Définir&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="period-dates" style="display:none;align-items:center;gap:6px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span style="font-size:11px;color:#6b7280"&gt;Du&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="date" class="period-date-input" id="date-from" onchange="doSearch()"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span style="font-size:11px;color:#6b7280"&gt;au&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="date" class="period-date-input" id="date-to" onchange="doSearch()"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="search-count" id="search-count"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="search-results" id="search-results"&gt;&lt;div class="search-empty"&gt;Tapez pour rechercher&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- MODAL --&gt;</p>
-<p class="p1">&lt;div class="overlay" id="modal-bg"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-hdr"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="modal-title" id="modal-title"&gt;Nouvelle course&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="modal-close" onclick="closeModal()"&gt;×&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="msec"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="msec-title"&gt;Général&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="fg c2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Chauffeur&lt;/div&gt;&lt;select class="finput" id="f-driver"&gt;&lt;/select&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Type&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;select class="finput" id="f-type"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;option&gt;TRSF IN&lt;/option&gt;&lt;option&gt;TRSF OUT&lt;/option&gt;&lt;option&gt;MAD&lt;/option&gt;&lt;option&gt;TOUR&lt;/option&gt;&lt;option&gt;GUIDAGE&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="fg c3"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Date&lt;/div&gt;&lt;input type="date" class="finput" id="f-date"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Début&lt;/div&gt;&lt;select class="finput" id="f-start"&gt;&lt;/select&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Fin&lt;/div&gt;&lt;select class="finput" id="f-end"&gt;&lt;/select&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="msec"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="msec-title"&gt;Itinéraire &amp;amp; client&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="fg c1"&gt;&lt;div&gt;&lt;div class="flabel"&gt;Pick-up&lt;/div&gt;&lt;input type="text" class="finput" id="f-pickup" placeholder="Ex: APT T1 / U2 272"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="fg c1"&gt;&lt;div&gt;&lt;div class="flabel"&gt;Dépose&lt;/div&gt;&lt;input type="text" class="finput" id="f-dropoff" placeholder="Ex: Hôtel Majestic Cannes"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="fg c31"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Nom client&lt;/div&gt;&lt;input type="text" class="finput" id="f-client"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;PAX&lt;/div&gt;&lt;input type="text" class="finput-pax" id="f-pax" maxlength="2"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="fg c2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Tél contact&lt;/div&gt;&lt;input type="tel" class="finput" id="f-tel" placeholder="+33 6 12 34 56 78"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Agence&lt;/div&gt;&lt;input type="text" class="finput" id="f-agence"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="fg c1"&gt;&lt;div&gt;&lt;div class="flabel"&gt;Note chauffeur&lt;/div&gt;&lt;textarea class="finput" id="f-note" placeholder="Instructions..."&gt;&lt;/textarea&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="admin-box"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="admin-title"&gt;🔒 Admin — privé&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="fg c3"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Prix achat (€)&lt;/div&gt;&lt;input type="number" class="finput" id="f-achat" placeholder="0" oninput="calcMarge()"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Prix vente (€)&lt;/div&gt;&lt;input type="number" class="finput" id="f-vente" placeholder="0" oninput="calcMarge()"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;&lt;div class="flabel"&gt;Marge&lt;/div&gt;&lt;div class="marge-val" id="f-marge"&gt;— €&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="admin-cols"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="admin-col-title"&gt;Factures&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="margin-bottom:8px"&gt;&lt;div class="flabel"&gt;Factu MY&lt;/div&gt;&lt;input type="text" class="finput" id="f-factu-my" placeholder="N° ma facture"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="margin-top:37px"&gt;&lt;div class="flabel"&gt;Factu ST&lt;/div&gt;&lt;input type="text" class="finput" id="f-st-factu" placeholder="N° facture ST"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="admin-col-title"&gt;Encaissements&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="margin-bottom:12px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="inline-label"&gt;Client&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;input type="date" class="finput" id="f-date-enc" style="margin-bottom:5px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="check-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="check-item"&gt;&lt;input type="radio" name="encaiss" value="Bank"&gt; Bank&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="check-item"&gt;&lt;input type="radio" name="encaiss" value="CB"&gt; CB&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="check-item"&gt;&lt;input type="radio" name="encaiss" value="Cash"&gt; Cash&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="inline-label"&gt;ST&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;input type="date" class="finput" id="f-st-date" style="margin-bottom:5px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="check-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="check-item"&gt;&lt;input type="radio" name="st-paie" value="Bank"&gt; Bank&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="check-item"&gt;&lt;input type="radio" name="st-paie" value="CB"&gt; CB&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="check-item"&gt;&lt;input type="radio" name="st-paie" value="Cash"&gt; Cash&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="fg c1" style="margin-bottom:0"&gt;&lt;div&gt;&lt;div class="flabel"&gt;Notes internes&lt;/div&gt;&lt;textarea class="finput" id="f-notes-admin" placeholder="Notes privées..."&gt;&lt;/textarea&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-footer"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-del" id="btn-del" style="display:none" onclick="deleteEv()"&gt;Supprimer&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="display:flex;gap:8px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn-cancel" onclick="closeModal()"&gt;Annuler&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn-save" onclick="saveEv()"&gt;Enregistrer&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="saving" id="saving"&gt;💾 Sauvegarde Google Sheets...&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">// ============================================</p>
-<p class="p1">// URL DE TON API GOOGLE SHEETS</p>
-<p class="p1">// ============================================</p>
-<p class="p1">const API_URL = 'https://script.google.com/macros/s/AKfycbxlemGeijs9dXcbssB_HX_ncPD6_K6JSqSYoujVYp1mJAORJ8HU9tImt8gwvYgNbdb3lQ/exec';</p>
-<p class="p2"><br></p>
-<p class="p1">const DRIVERS=[</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'d1',name:'Kevin', color:'#5BAEE8',hdr:'#1a6ab5',text:'#042C53',bg:'#deeefb'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'d2',name:'Edgard',color:'#F5C842',hdr:'#b89000',text:'#3a2e00',bg:'#fdf6d8'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'d3',name:'Koray', color:'#7BC67B',hdr:'#3a8c3a',text:'#0f2e0f',bg:'#e8f7e8'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'d4',name:'Marie', color:'#F07AAA',hdr:'#b83670',text:'#3a0020',bg:'#fde8f0'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'d5',name:'Extra', color:'#FF9A3C',hdr:'#c96800',text:'#3a1a00',bg:'#fff0e0'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'st1',name:'ST', <span class="Apple-converted-space">  </span>color:'#AAAAAA',hdr:'#666', <span class="Apple-converted-space">  </span>text:'#1a1a1a',bg:'#eeeeee'},</p>
-<p class="p1">];</p>
-<p class="p2"><br></p>
-<p class="p1">const PX=1.8,HOUR_PX=60*PX,TW=54,MIN_COL_W=120;</p>
-<p class="p1">const MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];</p>
-<p class="p1">const DAYS_S=['L','M','M','J','V','S','D'];</p>
-<p class="p1">const DAYS_SHORT=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];</p>
-<p class="p1">const DAYS_L=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];</p>
-<p class="p2"><br></p>
-<p class="p1">let selYear,selMonth,selDay,calYear,calMonth;</p>
-<p class="p1">let viewDays=1,editId=null,searchPeriod='all';</p>
-<p class="p1">let events=[];</p>
-<p class="p2"><br></p>
-<p class="p1">// ============================================</p>
-<p class="p1">// GOOGLE SHEETS API</p>
-<p class="p1">// ============================================</p>
-<p class="p1">async function loadFromSheets(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>try{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('sync-status').textContent='⏳ Chargement...';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const r=await fetch(API_URL);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const data=await r.json();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(data.success){</p>
-<p class="p1"><span class="Apple-converted-space">      </span>events=data.courses.map(c=&gt;({</p>
-<p class="p1"><span class="Apple-converted-space">        </span>id:c.id,driver:c.driver,type:c.type,date:c.date,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>start:parseInt(c.start)||0,end:parseInt(c.end)||0,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>pickup:c.pickup,dropoff:c.dropoff,client:c.client,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>pax:c.pax,tel:c.tel,agence:c.agence,note:c.note,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>admin:{achat:c.achat,vente:c.vente,encaiss:c.encaiss,</p>
-<p class="p1"><span class="Apple-converted-space">          </span>dateEnc:c.dateEnc,factuMy:c.factuMy,factuSt:c.factuSt,</p>
-<p class="p1"><span class="Apple-converted-space">          </span>dateSt:c.dateSt,paieSt:c.paieSt,notes:c.notes}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>})).filter(c=&gt;c.id);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('sync-status').textContent='✅ Synchronisé';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>renderCal();renderView();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}catch(e){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('sync-status').textContent='❌ Erreur connexion';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">async function saveToSheets(ev){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>showSaving();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const flat={action:'save',id:ev.id,driver:ev.driver,type:ev.type,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>date:ev.date,start:ev.start,end:ev.end,pickup:ev.pickup,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>dropoff:ev.dropoff,client:ev.client,pax:ev.pax,tel:ev.tel,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>agence:ev.agence,note:ev.note,...ev.admin};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>try{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>await fetch(API_URL,{method:'POST',body:JSON.stringify(flat)});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('sync-status').textContent='✅ Synchronisé';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}catch(e){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('sync-status').textContent='❌ Erreur sauvegarde';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">async function deleteFromSheets(id){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>showSaving();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>try{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>await fetch(API_URL,{method:'POST',body:JSON.stringify({action:'delete',id})});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('sync-status').textContent='✅ Synchronisé';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}catch(e){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('sync-status').textContent='❌ Erreur suppression';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// ============================================</p>
-<p class="p1">// HELPERS</p>
-<p class="p1">// ============================================</p>
-<p class="p1">function fmt(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}</p>
-<p class="p1">function selDs(){return `${selYear}-${String(selMonth+1).padStart(2,'0')}-${String(selDay).padStart(2,'0')}`}</p>
-<p class="p1">function todayDs(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`}</p>
-<p class="p1">function dsFromParts(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`}</p>
-<p class="p1">function snap(m){return Math.round(m/15)*15}</p>
-<p class="p1">function evDay(d){return events.filter(e=&gt;e.date===d)}</p>
-<p class="p1">function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}</p>
-<p class="p1">function showSaving(){const el=document.getElementById('saving');el.classList.add('show');setTimeout(()=&gt;el.classList.remove('show'),3000);}</p>
-<p class="p2"><br></p>
-<p class="p1">function layoutEvents(evs){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!evs.length)return[];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const sorted=[...evs].sort((a,b)=&gt;a.start-b.start);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const cols=[];const result=[];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(const ev of sorted){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>let placed=false;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>for(let c=0;c&lt;cols.length;c++){</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const last=cols[c][cols[c].length-1];</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if(ev.start&gt;=last.end){cols[c].push(ev);result.push({ev,col:c});placed=true;break;}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(!placed){cols.push([ev]);result.push({ev,col:cols.length-1});}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return result.map(item=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const active=result.filter(x=&gt;x.ev.start&lt;item.ev.end&amp;&amp;x.ev.end&gt;item.ev.start);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>return{...item,totalCols:Math.max(...active.map(x=&gt;x.col))+1};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function buildLegend(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('legend').innerHTML=DRIVERS.map(d=&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>`&lt;div class="leg-item"&gt;&lt;div class="leg-dot" style="background:${d.color};border:1px solid ${d.hdr}"&gt;&lt;/div&gt;&lt;span&gt;${d.name}&lt;/span&gt;&lt;/div&gt;`</p>
-<p class="p1"><span class="Apple-converted-space">  </span>).join('');</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function updateNavDate(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const el=document.getElementById('nav-date');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const sd=new Date(selYear,selMonth,selDay);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(viewDays===1) el.textContent=`${DAYS_L[sd.getDay()]} ${selDay} ${MONTHS[selMonth]} ${selYear}`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else if(viewDays===30) el.textContent=`${MONTHS[selMonth]} ${selYear}`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else{const end=addDays(sd,viewDays-1);el.textContent=`${selDay} ${MONTHS[selMonth].slice(0,3)} — ${end.getDate()} ${MONTHS[end.getMonth()].slice(0,3)} ${end.getFullYear()}`;}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// ============================================</p>
-<p class="p1">// NAVIGATION</p>
-<p class="p1">// ============================================</p>
-<p class="p1">function calNav(dir){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>calMonth+=dir;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(calMonth&gt;11){calMonth=0;calYear++;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(calMonth&lt;0){calMonth=11;calYear--;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>renderCal();</p>
-<p class="p1">}</p>
-<p class="p1">function selectDay(y,m,d){selYear=y;selMonth=m;selDay=d;renderCal();updateNavDate();renderView();}</p>
-<p class="p1">function goToday(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const n=new Date();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>selYear=n.getFullYear();selMonth=n.getMonth();selDay=n.getDate();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>calYear=selYear;calMonth=selMonth;viewDays=1;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>['3','7','30'].forEach(v=&gt;{const b=document.getElementById('vbtn-'+v);if(b)b.classList.remove('active');});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>renderCal();updateNavDate();renderView();</p>
-<p class="p1">}</p>
-<p class="p1">function setView(days){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>viewDays=days;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>['3','7','30'].forEach(v=&gt;{const b=document.getElementById('vbtn-'+v);if(b)b.classList.toggle('active',days===+v);});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>updateNavDate();renderView();</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// ============================================</p>
-<p class="p1">// CALENDRIER</p>
-<p class="p1">// ============================================</p>
-<p class="p1">function renderCal(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('cal-label').textContent=MONTHS[calMonth]+' '+calYear;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const first=new Date(calYear,calMonth,1);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const last=new Date(calYear,calMonth+1,0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const startDow=(first.getDay()+6)%7;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const tds=todayDs();const sds=selDs();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let h=DAYS_S.map(d=&gt;`&lt;div class="cal-day-hdr"&gt;${d}&lt;/div&gt;`).join('');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const cells=[];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(let i=0;i&lt;startDow;i++){const dd=new Date(calYear,calMonth,1-startDow+i);cells.push({y:dd.getFullYear(),m:dd.getMonth(),d:dd.getDate(),other:true});}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(let day=1;day&lt;=last.getDate();day++){cells.push({y:calYear,m:calMonth,d:day,other:false});}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>while(cells.length%7!==0){const lc=cells[cells.length-1];const nd=new Date(lc.y,lc.m,lc.d+1);cells.push({y:nd.getFullYear(),m:nd.getMonth(),d:nd.getDate(),other:true});}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>cells.forEach(({y,m,d,other})=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const dstr=dsFromParts(y,m,d);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const isT=dstr===tds,isSel=dstr===sds;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const dots=evDay(dstr).map(ev=&gt;{const dr=DRIVERS.find(x=&gt;x.id===ev.driver)||DRIVERS[5];return`&lt;div class="cal-dot" style="background:${dr.color}"&gt;&lt;/div&gt;`;}).join('');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div class="cal-day${other?' other':''}${isT?' today':''}${isSel?' selected':''}" onclick="selectDay(${y},${m},${d})"&gt;&lt;div class="cal-num"&gt;${d}&lt;/div&gt;&lt;div class="cal-dots"&gt;${dots}&lt;/div&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('cal-grid').innerHTML=h;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// ============================================</p>
-<p class="p1">// VUES</p>
-<p class="p1">// ============================================</p>
-<p class="p1">function renderView(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(viewDays===1)renderDay();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else if(viewDays===30)renderMonthView();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else{const sd=new Date(selYear,selMonth,selDay);renderMultiDay(Array.from({length:viewDays},(_,i)=&gt;addDays(sd,i)));}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function timeColHTML(totalH){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let h=`&lt;div style="width:${TW}px;min-width:${TW}px;flex-shrink:0;border-right:1px solid #e5e7eb;position:relative;height:${totalH}px"&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(let i=0;i&lt;24;i++){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const t=i*HOUR_PX;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="position:absolute;top:${t}px;left:0;right:0;border-bottom:1px solid #e5e7eb"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;span style="position:absolute;top:${t}px;right:4px;font-size:10px;color:#9ca3af;transform:translateY(-50%);white-space:nowrap;font-weight:500"&gt;${String(i).padStart(2,'0')}h&lt;/span&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="position:absolute;top:${t+15*PX}px;left:60%;right:0;border-bottom:1px solid rgba(0,0,0,0.05)"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;span style="position:absolute;top:${t+15*PX}px;right:4px;font-size:8px;color:#9ca3af;transform:translateY(-50%);opacity:0.6"&gt;:15&lt;/span&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="position:absolute;top:${t+30*PX}px;left:40%;right:0;border-bottom:1px solid rgba(0,0,0,0.09)"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;span style="position:absolute;top:${t+30*PX}px;right:4px;font-size:9px;color:#9ca3af;transform:translateY(-50%);opacity:0.8"&gt;:30&lt;/span&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="position:absolute;top:${t+45*PX}px;left:60%;right:0;border-bottom:1px solid rgba(0,0,0,0.05)"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;span style="position:absolute;top:${t+45*PX}px;right:4px;font-size:8px;color:#9ca3af;transform:translateY(-50%);opacity:0.6"&gt;:45&lt;/span&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return h+`&lt;/div&gt;`;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function gridLines(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let h='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(let i=0;i&lt;24;i++){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="position:absolute;top:${i*HOUR_PX}px;left:0;right:0;border-bottom:1px solid #e5e7eb"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="position:absolute;top:${i*HOUR_PX+15*PX}px;left:0;right:0;border-bottom:1px solid rgba(0,0,0,0.03)"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="position:absolute;top:${i*HOUR_PX+30*PX}px;left:0;right:0;border-bottom:1px solid rgba(0,0,0,0.06)"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="position:absolute;top:${i*HOUR_PX+45*PX}px;left:0;right:0;border-bottom:1px solid rgba(0,0,0,0.03)"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return h;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function evHTML(ev,dr,col,totalCols,colW){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const evH=(ev.end-ev.start)*PX;const compact=evH&lt;55;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const gap=2,sw=Math.max(20,(colW-(totalCols-1)*gap)/totalCols),left=col*(sw+gap);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let body='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!compact){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body+=`&lt;div class="ev-row"&gt;&lt;span style="opacity:.7"&gt;📍&lt;/span&gt;&lt;span class="ev-text"&gt;${ev.pickup||''}&lt;/span&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body+=`&lt;div class="ev-row"&gt;&lt;span style="opacity:.7"&gt;🏁&lt;/span&gt;&lt;span class="ev-text"&gt;${ev.dropoff||''}&lt;/span&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body+=`&lt;div class="ev-client-row"&gt;&lt;span class="ev-client-name"&gt;${ev.client||''}&lt;/span&gt;${ev.pax?`&lt;span class="ev-pax-box" style="background:${dr.color};color:${dr.text};border:1px solid ${dr.hdr}"&gt;${ev.pax}&lt;/span&gt;`:''}&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(ev.tel)body+=`&lt;div class="ev-row"&gt;&lt;span style="opacity:.7"&gt;📞&lt;/span&gt;&lt;span class="ev-text"&gt;${ev.tel}&lt;/span&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(ev.agence)body+=`&lt;div class="ev-agence" style="background:rgba(0,0,0,0.06);border-left-color:${dr.hdr}"&gt;🏢 ${ev.agence}&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(ev.note)body+=`&lt;div class="ev-note" style="background:rgba(0,0,0,0.07);border-left-color:${dr.hdr}"&gt;💬 ${ev.note}&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body+=`&lt;div class="ev-client-row"&gt;&lt;span class="ev-client-name"&gt;${ev.client||''}&lt;/span&gt;${ev.pax?`&lt;span class="ev-pax-box" style="background:${dr.color};color:${dr.text};border:1px solid ${dr.hdr}"&gt;${ev.pax}&lt;/span&gt;`:''}&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body+=`&lt;div class="ev-row" style="font-size:9px;opacity:.8"&gt;&lt;span class="ev-text"&gt;${ev.pickup||''}&lt;/span&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return `&lt;div class="ev-block" style="top:${ev.start*PX}px;height:${Math.max(evH,20)}px;left:${left}px;width:${sw}px;background:${dr.bg}" onclick="event.stopPropagation();openEdit('${ev.id}')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ev-hdr" style="background:${dr.hdr}"&gt;&lt;span class="ev-type"&gt;${ev.type}&lt;/span&gt;&lt;span class="ev-times"&gt;${fmt(ev.start)}→${fmt(ev.end)}&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ev-body" style="color:${dr.text}"&gt;${body}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;`;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function renderDay(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const d=selDs();const dayEvs=evDay(d);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const totalH=24*HOUR_PX;const now=new Date();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const isToday=d===todayDs();const nowM=now.getHours()*60+now.getMinutes();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const groups=[];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>DRIVERS.forEach(dr=&gt;{const drEvs=dayEvs.filter(e=&gt;e.driver===dr.id);if(drEvs.length)groups.push({dr,layout:layoutEvents(drEvs)});});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let h=`&lt;div style="display:flex;height:${totalH}px;min-width:max-content"&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>h+=timeColHTML(totalH);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!groups.length){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="flex:1;min-width:${MIN_COL_W}px;position:relative;height:${totalH}px;cursor:crosshair" onclick="openNewAt(event,'d1','${d}')"&gt;${gridLines()}${isToday?`&lt;div class="now-line" style="top:${nowM*PX}px"&gt;&lt;div class="now-dot"&gt;&lt;/div&gt;&lt;/div&gt;`:''}&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>groups.forEach(g=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const nSub=Math.max(...g.layout.map(x=&gt;x.totalCols));</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const colW=MIN_COL_W*nSub;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>h+=`&lt;div style="width:${colW}px;min-width:${colW}px;border-right:1px solid #e5e7eb;border-top:3px solid ${g.dr.hdr};position:relative;height:${totalH}px;cursor:crosshair" onclick="openNewAt(event,'${g.dr.id}','${d}')"&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>h+=gridLines();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if(isToday)h+=`&lt;div class="now-line" style="top:${nowM*PX}px"&gt;&lt;div class="now-dot"&gt;&lt;/div&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>g.layout.forEach(item=&gt;{h+=evHTML(item.ev,g.dr,item.col,item.totalCols,colW);});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>h+=`&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>h+=`&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const va=document.getElementById('view-area');va.innerHTML=h;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(()=&gt;{va.scrollTop=isToday?Math.max(0,nowM*PX-120):8*HOUR_PX;},50);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function renderMultiDay(days){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const MINI_H=44;const tds=todayDs();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let h=`&lt;div style="display:grid;grid-template-columns:${TW}px repeat(${days.length},1fr);min-width:${TW+days.length*120}px"&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>h+=`&lt;div style="padding:5px;border-bottom:1px solid #e5e7eb;border-right:1px solid #e5e7eb;background:#fff;position:sticky;top:0;z-index:10"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>days.forEach(d=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const dstr=dsFromParts(d.getFullYear(),d.getMonth(),d.getDate());const isT=dstr===tds;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="padding:5px 4px;text-align:center;border-bottom:1px solid #e5e7eb;border-right:1px solid #e5e7eb;background:${isT?'#dbeafe':'#fff'};position:sticky;top:0;z-index:10;cursor:pointer" onclick="selectDay(${d.getFullYear()},${d.getMonth()},${d.getDate()});setView(1)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="font-size:10px;color:${isT?'#1e40af':'#9ca3af'}"&gt;${DAYS_SHORT[(d.getDay()+6)%7]}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="font-size:15px;font-weight:500;color:${isT?'#1e40af':'#374151'}"&gt;${d.getDate()}&lt;/div&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(let hr=0;hr&lt;24;hr++){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="font-size:10px;color:#9ca3af;text-align:right;padding:2px 5px;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;height:${MINI_H}px;display:flex;align-items:flex-start;justify-content:flex-end"&gt;${String(hr).padStart(2,'0')}h&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>days.forEach(d=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const dstr=dsFromParts(d.getFullYear(),d.getMonth(),d.getDate());</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const slotEvs=events.filter(e=&gt;e.date===dstr&amp;&amp;e.start&lt;(hr+1)*60&amp;&amp;e.end&gt;hr*60);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>h+=`&lt;div style="height:${MINI_H}px;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;padding:2px;overflow:hidden;cursor:pointer" onclick="selectDay(${d.getFullYear()},${d.getMonth()},${d.getDate()});setView(1)"&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>slotEvs.forEach(ev=&gt;{const dr=DRIVERS.find(x=&gt;x.id===ev.driver)||DRIVERS[5];h+=`&lt;div style="background:${dr.color};color:${dr.text};border-radius:3px;padding:1px 4px;font-size:10px;font-weight:500;margin-bottom:1px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"&gt;${ev.type} — ${ev.client}&lt;/div&gt;`;});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>h+=`&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>h+=`&lt;/div&gt;`;document.getElementById('view-area').innerHTML=h;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function renderMonthView(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const first=new Date(selYear,selMonth,1);const last=new Date(selYear,selMonth+1,0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const startDow=(first.getDay()+6)%7;const tds=todayDs();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let h=`&lt;div style="display:grid;grid-template-columns:repeat(7,1fr)"&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>DAYS_SHORT.forEach(d=&gt;h+=`&lt;div style="padding:5px 6px;font-size:11px;font-weight:500;color:#9ca3af;text-align:center;border-bottom:1px solid #e5e7eb;border-right:1px solid #e5e7eb"&gt;${d}&lt;/div&gt;`);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const cells=[];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(let i=0;i&lt;startDow;i++){const dd=new Date(selYear,selMonth,1-startDow+i);cells.push({y:dd.getFullYear(),m:dd.getMonth(),d:dd.getDate(),other:true});}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(let day=1;day&lt;=last.getDate();day++){cells.push({y:selYear,m:selMonth,d:day,other:false});}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>while(cells.length%7!==0){const lc=cells[cells.length-1];const nd=new Date(lc.y,lc.m,lc.d+1);cells.push({y:nd.getFullYear(),m:nd.getMonth(),d:nd.getDate(),other:true});}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>cells.forEach(({y,m,d,other})=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const dstr=dsFromParts(y,m,d);const isT=dstr===tds;const dayEvs=evDay(dstr);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="min-height:70px;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;padding:3px;opacity:${other?0.35:1};cursor:pointer" onclick="selectDay(${y},${m},${d});setView(1)"&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;div style="width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;margin-bottom:2px;background:${isT?'#1a6ab5':'transparent'};color:${isT?'#fff':'#9ca3af'}"&gt;${d}&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>dayEvs.slice(0,3).forEach(ev=&gt;{const dr=DRIVERS.find(x=&gt;x.id===ev.driver)||DRIVERS[5];h+=`&lt;div style="background:${dr.color};color:${dr.text};border-radius:2px;padding:1px 4px;font-size:10px;font-weight:500;margin-bottom:1px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"&gt;${ev.type} ${ev.client.slice(0,12)}&lt;/div&gt;`;});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(dayEvs.length&gt;3)h+=`&lt;div style="font-size:9px;color:#9ca3af"&gt;+${dayEvs.length-3}&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h+=`&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>h+=`&lt;/div&gt;`;document.getElementById('view-area').innerHTML=h;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// ============================================</p>
-<p class="p1">// SEARCH</p>
-<p class="p1">// ============================================</p>
-<p class="p1">function openSearch(){document.getElementById('search-bg').classList.add('open');setTimeout(()=&gt;document.getElementById('search-input').focus(),100);}</p>
-<p class="p1">function closeSearch(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('search-bg').classList.remove('open');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('search-input').value='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('search-results').innerHTML='&lt;div class="search-empty"&gt;Tapez pour rechercher&lt;/div&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('search-count').textContent='';</p>
-<p class="p1">}</p>
-<p class="p1">function setPeriod(p){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>searchPeriod=p;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('pbtn-all').classList.toggle('active',p==='all');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('pbtn-custom').classList.toggle('active',p==='custom');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('period-dates').style.display=p==='custom'?'flex':'none';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>doSearch();</p>
-<p class="p1">}</p>
-<p class="p1">function hl(text,query){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!query||!text)return text||'';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const escaped=query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&amp;');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return String(text).replace(new RegExp(`(${escaped})`,'gi'),'&lt;span class="highlight"&gt;$1&lt;/span&gt;');</p>
-<p class="p1">}</p>
-<p class="p1">function doSearch(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const q=document.getElementById('search-input').value.trim().toLowerCase();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!q){document.getElementById('search-results').innerHTML='&lt;div class="search-empty"&gt;Tapez pour rechercher&lt;/div&gt;';document.getElementById('search-count').textContent='';return;}<a href="https://claude.ai/project/019e1173-6e0c-770d-b8d3-7d0cf363649b"><span class="s1">Planning VTC My Riviera</span></a></p>
-<p class="p3"><span class="s2">/</span></p>
-<p class="p4"><span class="s3"></span><br></p>
-<p class="p5"><span class="s3"></span><br></p>
-<p class="p5"><span class="s3"></span><br></p>
-<p class="p6"><span class="s3"></span><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const fromVal=document.getElementById('date-from').value;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const toVal=document.getElementById('date-to').value;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let filtered=events.filter(ev=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(searchPeriod==='custom'){if(fromVal&amp;&amp;ev.date&lt;fromVal)return false;if(toVal&amp;&amp;ev.date&gt;toVal)return false;}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const dr=DRIVERS.find(x=&gt;x.id===ev.driver)||{name:''};</p>
-<p class="p1"><span class="Apple-converted-space">    </span>return [ev.client,ev.type,ev.pickup,ev.dropoff,ev.agence,ev.note,dr.name].join(' ').toLowerCase().includes(q);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}).sort((a,b)=&gt;a.date.localeCompare(b.date));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('search-count').textContent=filtered.length?`${filtered.length} résultat${filtered.length&gt;1?'s':''}` :'';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!filtered.length){document.getElementById('search-results').innerHTML=`&lt;div class="search-empty"&gt;Aucun résultat pour "&lt;strong&gt;${q}&lt;/strong&gt;"&lt;/div&gt;`;return;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('search-results').innerHTML=filtered.map(ev=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const dr=DRIVERS.find(x=&gt;x.id===ev.driver)||DRIVERS[5];</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const dateObj=new Date(ev.date+'T00:00:00');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const dateFmt=`${DAYS_L[dateObj.getDay()].slice(0,3)}. ${dateObj.getDate()} ${MONTHS[dateObj.getMonth()].slice(0,3)} ${dateObj.getFullYear()}`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>return `&lt;div class="result-item" onclick="goToResult('${ev.date}')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="result-color" style="background:${dr.hdr}"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="result-main"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="result-top"&gt;&lt;span class="result-type"&gt;${hl(ev.type,q)}&lt;/span&gt;&lt;span class="result-date"&gt;${dateFmt}&lt;/span&gt;&lt;span class="result-driver" style="background:${dr.color};color:${dr.text}"&gt;${hl(dr.name,q)}&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="result-client"&gt;${hl(ev.client,q)}${ev.pax?` &lt;span style="font-size:10px;color:#9ca3af"&gt;· ${ev.pax} PAX&lt;/span&gt;`:''}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="result-sub"&gt;${hl(ev.pickup,q)} → ${hl(ev.dropoff,q)}${ev.agence?` · ${hl(ev.agence,q)}`:''}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="color:#9ca3af;font-size:14px"&gt;›&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}).join('');</p>
-<p class="p1">}</p>
-<p class="p1">function goToResult(dateStr){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const p=dateStr.split('-');selYear=+p[0];selMonth=+p[1]-1;selDay=+p[2];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>calYear=selYear;calMonth=selMonth;viewDays=1;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>['3','7','30'].forEach(v=&gt;{const b=document.getElementById('vbtn-'+v);if(b)b.classList.remove('active');});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>closeSearch();renderCal();updateNavDate();renderView();</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// ============================================</p>
-<p class="p1">// MODAL</p>
-<p class="p1">// ============================================</p>
-<p class="p1">function timeOpts(){let s='';for(let m=0;m&lt;24*60;m+=15)s+=`&lt;option value="${m}"&gt;${fmt(m)}&lt;/option&gt;`;return s;}</p>
-<p class="p1">function driverOpts(sel='d1'){return DRIVERS.map(d=&gt;`&lt;option value="${d.id}"${d.id===sel?' selected':''}&gt;${d.name}&lt;/option&gt;`).join('');}</p>
-<p class="p2"><br></p>
-<p class="p1">function resetModal(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-driver').innerHTML=driverOpts();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-start').innerHTML=timeOpts();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-end').innerHTML=timeOpts();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-type').value='TRSF IN';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-date').value=selDs();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-start').value=480;document.getElementById('f-end').value=540;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>['f-pickup','f-dropoff','f-client','f-pax','f-tel','f-agence','f-note','f-notes-admin','f-st-factu','f-factu-my'].forEach(id=&gt;{const el=document.getElementById(id);if(el)el.value='';});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-achat').value='';document.getElementById('f-vente').value='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-marge').textContent='— €';document.getElementById('f-marge').style.color='#059669';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-date-enc').value='';document.getElementById('f-st-date').value='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('input[name="encaiss"]').forEach(r=&gt;r.checked=false);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('input[name="st-paie"]').forEach(r=&gt;r.checked=false);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function openNew(){resetModal();editId=null;document.getElementById('modal-title').textContent='Nouvelle course';document.getElementById('btn-del').style.display='none';document.getElementById('modal-bg').classList.add('open');}</p>
-<p class="p2"><br></p>
-<p class="p1">function openNewAt(e,dId,dstr){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const va=document.getElementById('view-area');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const vaRect=va.getBoundingClientRect();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const relY=e.clientY-vaRect.top+va.scrollTop-3;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const mins=snap(Math.max(0,Math.floor(relY/PX)));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>resetModal();editId=null;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal-title').textContent='Nouvelle course';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('btn-del').style.display='none';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-driver').innerHTML=driverOpts(dId);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-date').value=dstr;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-start').value=Math.min(mins,1425);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-end').value=Math.min(mins+60,1440);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal-bg').classList.add('open');</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function openEdit(id){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const ev=events.find(e=&gt;e.id===id);if(!ev)return;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>resetModal();editId=id;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal-title').textContent='Modifier la course';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('btn-del').style.display='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-driver').innerHTML=driverOpts(ev.driver);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-type').value=ev.type||'TRSF IN';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-date').value=ev.date;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-start').value=ev.start;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('f-end').value=ev.end;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>['pickup','dropoff','client','pax','tel','agence','note'].forEach(k=&gt;{document.getElementById('f-'+k).value=ev[k]||'';});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(ev.admin){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('f-achat').value=ev.admin.achat||'';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('f-vente').value=ev.admin.vente||'';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>calcMarge();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const rb=document.querySelector(`input[name="encaiss"][value="${ev.admin.encaiss}"]`);if(rb)rb.checked=true;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('f-date-enc').value=ev.admin.dateEnc||'';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('f-factu-my').value=ev.admin.factuMy||'';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('f-st-factu').value=ev.admin.factuSt||'';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('f-st-date').value=ev.admin.dateSt||'';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const rb2=document.querySelector(`input[name="st-paie"][value="${ev.admin.paieSt}"]`);if(rb2)rb2.checked=true;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('f-notes-admin').value=ev.admin.notes||'';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal-bg').classList.add('open');</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function closeModal(){document.getElementById('modal-bg').classList.remove('open');}</p>
-<p class="p1">function calcMarge(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const a=parseFloat(document.getElementById('f-achat').value)||0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const v=parseFloat(document.getElementById('f-vente').value)||0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const m=v-a;const el=document.getElementById('f-marge');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>el.textContent=m.toFixed(0)+' €';el.style.color=m&gt;=0?'#059669':'#dc2626';</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">async function saveEv(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const start=+document.getElementById('f-start').value;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const end=+document.getElementById('f-end').value;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(end&lt;=start){alert("L'heure de fin doit être après le début.");return;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const encaiss=(document.querySelector('input[name="encaiss"]:checked')||{}).value||'';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const paieSt=(document.querySelector('input[name="st-paie"]:checked')||{}).value||'';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const evDate=document.getElementById('f-date').value;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const ev={</p>
-<p class="p1"><span class="Apple-converted-space">    </span>id:editId||('e'+Date.now()),</p>
-<p class="p1"><span class="Apple-converted-space">    </span>driver:document.getElementById('f-driver').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>type:document.getElementById('f-type').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>date:evDate,start,end,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>pickup:document.getElementById('f-pickup').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>dropoff:document.getElementById('f-dropoff').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>client:document.getElementById('f-client').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>pax:document.getElementById('f-pax').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>tel:document.getElementById('f-tel').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>agence:document.getElementById('f-agence').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>note:document.getElementById('f-note').value,</p>
-<p class="p1"><span class="Apple-converted-space">    </span>admin:{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>achat:document.getElementById('f-achat').value,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>vente:document.getElementById('f-vente').value,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>encaiss,dateEnc:document.getElementById('f-date-enc').value,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>factuMy:document.getElementById('f-factu-my').value,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>factuSt:document.getElementById('f-st-factu').value,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>dateSt:document.getElementById('f-st-date').value,</p>
-<p class="p1"><span class="Apple-converted-space">      </span>paieSt,notes:document.getElementById('f-notes-admin').value</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>closeModal();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(editId)events=events.map(e=&gt;e.id===editId?ev:e);else events.push(ev);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(evDate!==selDs()){const p=evDate.split('-');selYear=+p[0];selMonth=+p[1]-1;selDay=+p[2];calYear=selYear;calMonth=selMonth;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>renderCal();updateNavDate();renderView();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>await saveToSheets(ev);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">async function deleteEv(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!editId)return;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const id=editId;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>closeModal();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>events=events.filter(e=&gt;e.id!==id);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>renderCal();renderView();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>await deleteFromSheets(id);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// ============================================</p>
-<p class="p1">// INIT</p>
-<p class="p1">// ============================================</p>
-<p class="p1">document.getElementById('f-driver').innerHTML=driverOpts();</p>
-<p class="p1">document.getElementById('f-start').innerHTML=timeOpts();</p>
-<p class="p1">document.getElementById('f-end').innerHTML=timeOpts();</p>
-<p class="p1">const n=new Date();</p>
-<p class="p1">selYear=n.getFullYear();selMonth=n.getMonth();selDay=n.getDate();</p>
-<p class="p1">calYear=selYear;calMonth=selMonth;</p>
-<p class="p1">buildLegend();updateNavDate();</p>
-<p class="p1">loadFromSheets();</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<div class="app">
+  <div class="cal-wrap">
+    <div class="cal-nav">
+      <button class="cal-nav-btn" onclick="calNav(-1)">‹</button>
+      <span class="cal-month-label" id="cal-label"></span>
+      <button class="cal-nav-btn" onclick="calNav(1)">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-left">
+      <button onclick="openNew()" style="background-color:#FF1493;color:#fff;border:2px solid #FF1493;border-radius:8px;font-weight:700;font-size:14px;padding:7px 20px;cursor:pointer;box-shadow:0 2px 10px rgba(255,20,147,0.5);white-space:nowrap;">+ Ajouter</button>
+      <button onclick="openSearch()" style="background:transparent;border:1px solid #e5e7eb;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:16px;">🔍</button>
+      <span class="sync-indicator" id="sync-status">⏳ Chargement...</span>
+    </div>
+    <div class="nav-center">
+      <button class="btn" onclick="goToday()">Aujourd'hui</button>
+      <button class="btn" id="vbtn-3" onclick="setView(3)">3J</button>
+      <button class="btn" id="vbtn-7" onclick="setView(7)">7J</button>
+      <button class="btn" id="vbtn-30" onclick="setView(30)">Mois</button>
+    </div>
+    <div class="nav-right"><span class="nav-date" id="nav-date"></span></div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="view-area" id="view-area"></div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-bg" id="search-bg" onclick="if(event.target===this)closeSearch()">
+  <div class="search-panel">
+    <div class="search-hdr">
+      <span>🔍</span>
+      <input class="search-input" id="search-input" placeholder="Client, chauffeur, agence, lieu, type..." oninput="doSearch()" autocomplete="off">
+      <button class="search-close" onclick="closeSearch()">×</button>
+    </div>
+    <div class="search-period">
+      <span style="font-size:11px;color:#6b7280">Période :</span>
+      <button class="period-btn active" id="pbtn-all" onclick="setPeriod('all')">Toutes les dates</button>
+      <button class="period-btn" id="pbtn-custom" onclick="setPeriod('custom')">Définir</button>
+      <div id="period-dates" style="display:none;align-items:center;gap:6px">
+        <span style="font-size:11px;color:#6b7280">Du</span>
+        <input type="date" class="period-date-input" id="date-from" onchange="doSearch()">
+        <span style="font-size:11px;color:#6b7280">au</span>
+        <input type="date" class="period-date-input" id="date-to" onchange="doSearch()">
+      </div>
+    </div>
+    <div class="search-count" id="search-count"></div>
+    <div class="search-results" id="search-results"><div class="search-empty">Tapez pour rechercher</div></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="modal-bg">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="modal-title">Nouvelle course</span>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="msec">
+        <div class="msec-title">Général</div>
+        <div class="fg c2">
+          <div><div class="flabel">Chauffeur</div><select class="finput" id="f-driver"></select></div>
+          <div><div class="flabel">Type</div>
+            <select class="finput" id="f-type">
+              <option>TRSF IN</option><option>TRSF OUT</option><option>MAD</option><option>TOUR</option><option>GUIDAGE</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg c3">
+          <div><div class="flabel">Date</div><input type="date" class="finput" id="f-date"></div>
+          <div><div class="flabel">Début</div><select class="finput" id="f-start"></select></div>
+          <div><div class="flabel">Fin</div><select class="finput" id="f-end"></select></div>
+        </div>
+      </div>
+      <div class="msec">
+        <div class="msec-title">Itinéraire &amp; client</div>
+        <div class="fg c1"><div><div class="flabel">Pick-up</div><input type="text" class="finput" id="f-pickup" placeholder="Ex: APT T1 / U2 272"></div></div>
+        <div class="fg c1"><div><div class="flabel">Dépose</div><input type="text" class="finput" id="f-dropoff" placeholder="Ex: Hôtel Majestic Cannes"></div></div>
+        <div class="fg c31">
+          <div><div class="flabel">Nom client</div><input type="text" class="finput" id="f-client"></div>
+          <div><div class="flabel">PAX</div><input type="text" class="finput-pax" id="f-pax" maxlength="2"></div>
+        </div>
+        <div class="fg c2">
+          <div><div class="flabel">Tél contact</div><input type="tel" class="finput" id="f-tel" placeholder="+33 6 12 34 56 78"></div>
+          <div><div class="flabel">Agence</div><input type="text" class="finput" id="f-agence"></div>
+        </div>
+        <div class="fg c1"><div><div class="flabel">Note chauffeur</div><textarea class="finput" id="f-note" placeholder="Instructions..."></textarea></div></div>
+      </div>
+      <div class="admin-box">
+        <div class="admin-title">🔒 Admin — privé</div>
+        <div class="fg c3">
+          <div><div class="flabel">Prix achat (€)</div><input type="number" class="finput" id="f-achat" placeholder="0" oninput="calcMarge()"></div>
+          <div><div class="flabel">Prix vente (€)</div><input type="number" class="finput" id="f-vente" placeholder="0" oninput="calcMarge()"></div>
+          <div><div class="flabel">Marge</div><div class="marge-val" id="f-marge">— €</div></div>
+        </div>
+        <div class="divider"></div>
+        <div class="admin-cols">
+          <div>
+            <div class="admin-col-title">Factures</div>
+            <div style="margin-bottom:8px"><div class="flabel">Factu MY</div><input type="text" class="finput" id="f-factu-my" placeholder="N° ma facture"></div>
+            <div style="margin-top:37px"><div class="flabel">Factu ST</div><input type="text" class="finput" id="f-st-factu" placeholder="N° facture ST"></div>
+          </div>
+          <div>
+            <div class="admin-col-title">Encaissements</div>
+            <div style="margin-bottom:12px">
+              <div class="inline-label">Client</div>
+              <input type="date" class="finput" id="f-date-enc" style="margin-bottom:5px">
+              <div class="check-group">
+                <label class="check-item"><input type="radio" name="encaiss" value="Bank"> Bank</label>
+                <label class="check-item"><input type="radio" name="encaiss" value="CB"> CB</label>
+                <label class="check-item"><input type="radio" name="encaiss" value="Cash"> Cash</label>
+              </div>
+            </div>
+            <div>
+              <div class="inline-label">ST</div>
+              <input type="date" class="finput" id="f-st-date" style="margin-bottom:5px">
+              <div class="check-group">
+                <label class="check-item"><input type="radio" name="st-paie" value="Bank"> Bank</label>
+                <label class="check-item"><input type="radio" name="st-paie" value="CB"> CB</label>
+                <label class="check-item"><input type="radio" name="st-paie" value="Cash"> Cash</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="fg c1" style="margin-bottom:0"><div><div class="flabel">Notes internes</div><textarea class="finput" id="f-notes-admin" placeholder="Notes privées..."></textarea></div></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-del" id="btn-del" style="display:none" onclick="deleteEv()">Supprimer</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+        <button class="btn-save" onclick="saveEv()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="saving" id="saving">💾 Sauvegarde Google Sheets...</div>
+
+<script>
+// ============================================
+// URL DE TON API GOOGLE SHEETS
+// ============================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbxlemGeijs9dXcbssB_HX_ncPD6_K6JSqSYoujVYp1mJAORJ8HU9tImt8gwvYgNbdb3lQ/exec';
+
+const DRIVERS=[
+  {id:'d1',name:'Kevin', color:'#5BAEE8',hdr:'#1a6ab5',text:'#042C53',bg:'#deeefb'},
+  {id:'d2',name:'Edgard',color:'#F5C842',hdr:'#b89000',text:'#3a2e00',bg:'#fdf6d8'},
+  {id:'d3',name:'Koray', color:'#7BC67B',hdr:'#3a8c3a',text:'#0f2e0f',bg:'#e8f7e8'},
+  {id:'d4',name:'Marie', color:'#F07AAA',hdr:'#b83670',text:'#3a0020',bg:'#fde8f0'},
+  {id:'d5',name:'Extra', color:'#FF9A3C',hdr:'#c96800',text:'#3a1a00',bg:'#fff0e0'},
+  {id:'st1',name:'ST',   color:'#AAAAAA',hdr:'#666',   text:'#1a1a1a',bg:'#eeeeee'},
+];
+
+const PX=1.8,HOUR_PX=60*PX,TW=54,MIN_COL_W=120;
+const MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const DAYS_S=['L','M','M','J','V','S','D'];
+const DAYS_SHORT=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const DAYS_L=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+
+let selYear,selMonth,selDay,calYear,calMonth;
+let viewDays=1,editId=null,searchPeriod='all';
+let events=[];
+
+// ============================================
+// GOOGLE SHEETS API
+// ============================================
+async function loadFromSheets(){
+  try{
+    document.getElementById('sync-status').textContent='⏳ Chargement...';
+    const r=await fetch(API_URL);
+    const data=await r.json();
+    if(data.success){
+      events=data.courses.map(c=>({
+        id:c.id,driver:c.driver,type:c.type,date:c.date,
+        start:parseInt(c.start)||0,end:parseInt(c.end)||0,
+        pickup:c.pickup,dropoff:c.dropoff,client:c.client,
+        pax:c.pax,tel:c.tel,agence:c.agence,note:c.note,
+        admin:{achat:c.achat,vente:c.vente,encaiss:c.encaiss,
+          dateEnc:c.dateEnc,factuMy:c.factuMy,factuSt:c.factuSt,
+          dateSt:c.dateSt,paieSt:c.paieSt,notes:c.notes}
+      })).filter(c=>c.id);
+      document.getElementById('sync-status').textContent='✅ Synchronisé';
+      renderCal();renderView();
+    }
+  }catch(e){
+    document.getElementById('sync-status').textContent='❌ Erreur connexion';
+  }
+}
+
+async function saveToSheets(ev){
+  showSaving();
+  const flat={action:'save',id:ev.id,driver:ev.driver,type:ev.type,
+    date:ev.date,start:ev.start,end:ev.end,pickup:ev.pickup,
+    dropoff:ev.dropoff,client:ev.client,pax:ev.pax,tel:ev.tel,
+    agence:ev.agence,note:ev.note,...ev.admin};
+  try{
+    await fetch(API_URL,{method:'POST',body:JSON.stringify(flat)});
+    document.getElementById('sync-status').textContent='✅ Synchronisé';
+  }catch(e){
+    document.getElementById('sync-status').textContent='❌ Erreur sauvegarde';
+  }
+}
+
+async function deleteFromSheets(id){
+  showSaving();
+  try{
+    await fetch(API_URL,{method:'POST',body:JSON.stringify({action:'delete',id})});
+    document.getElementById('sync-status').textContent='✅ Synchronisé';
+  }catch(e){
+    document.getElementById('sync-status').textContent='❌ Erreur suppression';
+  }
+}
+
+// ============================================
+// HELPERS
+// ============================================
+function fmt(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+function selDs(){return `${selYear}-${String(selMonth+1).padStart(2,'0')}-${String(selDay).padStart(2,'0')}`}
+function todayDs(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`}
+function dsFromParts(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
+function snap(m){return Math.round(m/15)*15}
+function evDay(d){return events.filter(e=>e.date===d)}
+function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function showSaving(){const el=document.getElementById('saving');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
+
+function layoutEvents(evs){
+  if(!evs.length)return[];
+  const sorted=[...evs].sort((a,b)=>a.start-b.start);
+  const cols=[];const result=[];
+  for(const ev of sorted){
+    let placed=false;
+    for(let c=0;c<cols.length;c++){
+      const last=cols[c][cols[c].length-1];
+      if(ev.start>=last.end){cols[c].push(ev);result.push({ev,col:c});placed=true;break;}
+    }
+    if(!placed){cols.push([ev]);result.push({ev,col:cols.length-1});}
+  }
+  return result.map(item=>{
+    const active=result.filter(x=>x.ev.start<item.ev.end&&x.ev.end>item.ev.start);
+    return{...item,totalCols:Math.max(...active.map(x=>x.col))+1};
+  });
+}
+
+function buildLegend(){
+  document.getElementById('legend').innerHTML=DRIVERS.map(d=>
+    `<div class="leg-item"><div class="leg-dot" style="background:${d.color};border:1px solid ${d.hdr}"></div><span>${d.name}</span></div>`
+  ).join('');
+}
+
+function updateNavDate(){
+  const el=document.getElementById('nav-date');
+  const sd=new Date(selYear,selMonth,selDay);
+  if(viewDays===1) el.textContent=`${DAYS_L[sd.getDay()]} ${selDay} ${MONTHS[selMonth]} ${selYear}`;
+  else if(viewDays===30) el.textContent=`${MONTHS[selMonth]} ${selYear}`;
+  else{const end=addDays(sd,viewDays-1);el.textContent=`${selDay} ${MONTHS[selMonth].slice(0,3)} — ${end.getDate()} ${MONTHS[end.getMonth()].slice(0,3)} ${end.getFullYear()}`;}
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+function calNav(dir){
+  calMonth+=dir;
+  if(calMonth>11){calMonth=0;calYear++;}
+  if(calMonth<0){calMonth=11;calYear--;}
+  renderCal();
+}
+function selectDay(y,m,d){selYear=y;selMonth=m;selDay=d;renderCal();updateNavDate();renderView();}
+function goToday(){
+  const n=new Date();
+  selYear=n.getFullYear();selMonth=n.getMonth();selDay=n.getDate();
+  calYear=selYear;calMonth=selMonth;viewDays=1;
+  ['3','7','30'].forEach(v=>{const b=document.getElementById('vbtn-'+v);if(b)b.classList.remove('active');});
+  renderCal();updateNavDate();renderView();
+}
+function setView(days){
+  viewDays=days;
+  ['3','7','30'].forEach(v=>{const b=document.getElementById('vbtn-'+v);if(b)b.classList.toggle('active',days===+v);});
+  updateNavDate();renderView();
+}
+
+// ============================================
+// CALENDRIER
+// ============================================
+function renderCal(){
+  document.getElementById('cal-label').textContent=MONTHS[calMonth]+' '+calYear;
+  const first=new Date(calYear,calMonth,1);
+  const last=new Date(calYear,calMonth+1,0);
+  const startDow=(first.getDay()+6)%7;
+  const tds=todayDs();const sds=selDs();
+  let h=DAYS_S.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('');
+  const cells=[];
+  for(let i=0;i<startDow;i++){const dd=new Date(calYear,calMonth,1-startDow+i);cells.push({y:dd.getFullYear(),m:dd.getMonth(),d:dd.getDate(),other:true});}
+  for(let day=1;day<=last.getDate();day++){cells.push({y:calYear,m:calMonth,d:day,other:false});}
+  while(cells.length%7!==0){const lc=cells[cells.length-1];const nd=new Date(lc.y,lc.m,lc.d+1);cells.push({y:nd.getFullYear(),m:nd.getMonth(),d:nd.getDate(),other:true});}
+  cells.forEach(({y,m,d,other})=>{
+    const dstr=dsFromParts(y,m,d);
+    const isT=dstr===tds,isSel=dstr===sds;
+    const dots=evDay(dstr).map(ev=>{const dr=DRIVERS.find(x=>x.id===ev.driver)||DRIVERS[5];return`<div class="cal-dot" style="background:${dr.color}"></div>`;}).join('');
+    h+=`<div class="cal-day${other?' other':''}${isT?' today':''}${isSel?' selected':''}" onclick="selectDay(${y},${m},${d})"><div class="cal-num">${d}</div><div class="cal-dots">${dots}</div></div>`;
+  });
+  document.getElementById('cal-grid').innerHTML=h;
+}
+
+// ============================================
+// VUES
+// ============================================
+function renderView(){
+  if(viewDays===1)renderDay();
+  else if(viewDays===30)renderMonthView();
+  else{const sd=new Date(selYear,selMonth,selDay);renderMultiDay(Array.from({length:viewDays},(_,i)=>addDays(sd,i)));}
+}
+
+function timeColHTML(totalH){
+  let h=`<div style="width:${TW}px;min-width:${TW}px;flex-shrink:0;border-right:1px solid #e5e7eb;position:relative;height:${totalH}px">`;
+  for(let i=0;i<24;i++){
+    const t=i*HOUR_PX;
+    h+=`<div style="position:absolute;top:${t}px;left:0;right:0;border-bottom:1px solid #e5e7eb"></div>`;
+    h+=`<span style="position:absolute;top:${t}px;right:4px;font-size:10px;color:#9ca3af;transform:translateY(-50%);white-space:nowrap;font-weight:500">${String(i).padStart(2,'0')}h</span>`;
+    h+=`<div style="position:absolute;top:${t+15*PX}px;left:60%;right:0;border-bottom:1px solid rgba(0,0,0,0.05)"></div>`;
+    h+=`<span style="position:absolute;top:${t+15*PX}px;right:4px;font-size:8px;color:#9ca3af;transform:translateY(-50%);opacity:0.6">:15</span>`;
+    h+=`<div style="position:absolute;top:${t+30*PX}px;left:40%;right:0;border-bottom:1px solid rgba(0,0,0,0.09)"></div>`;
+    h+=`<span style="position:absolute;top:${t+30*PX}px;right:4px;font-size:9px;color:#9ca3af;transform:translateY(-50%);opacity:0.8">:30</span>`;
+    h+=`<div style="position:absolute;top:${t+45*PX}px;left:60%;right:0;border-bottom:1px solid rgba(0,0,0,0.05)"></div>`;
+    h+=`<span style="position:absolute;top:${t+45*PX}px;right:4px;font-size:8px;color:#9ca3af;transform:translateY(-50%);opacity:0.6">:45</span>`;
+  }
+  return h+`</div>`;
+}
+
+function gridLines(){
+  let h='';
+  for(let i=0;i<24;i++){
+    h+=`<div style="position:absolute;top:${i*HOUR_PX}px;left:0;right:0;border-bottom:1px solid #e5e7eb"></div>`;
+    h+=`<div style="position:absolute;top:${i*HOUR_PX+15*PX}px;left:0;right:0;border-bottom:1px solid rgba(0,0,0,0.03)"></div>`;
+    h+=`<div style="position:absolute;top:${i*HOUR_PX+30*PX}px;left:0;right:0;border-bottom:1px solid rgba(0,0,0,0.06)"></div>`;
+    h+=`<div style="position:absolute;top:${i*HOUR_PX+45*PX}px;left:0;right:0;border-bottom:1px solid rgba(0,0,0,0.03)"></div>`;
+  }
+  return h;
+}
+
+function evHTML(ev,dr,col,totalCols,colW){
+  const evH=(ev.end-ev.start)*PX;const compact=evH<55;
+  const gap=2,sw=Math.max(20,(colW-(totalCols-1)*gap)/totalCols),left=col*(sw+gap);
+  let body='';
+  if(!compact){
+    body+=`<div class="ev-row"><span style="opacity:.7">📍</span><span class="ev-text">${ev.pickup||''}</span></div>`;
+    body+=`<div class="ev-row"><span style="opacity:.7">🏁</span><span class="ev-text">${ev.dropoff||''}</span></div>`;
+    body+=`<div class="ev-client-row"><span class="ev-client-name">${ev.client||''}</span>${ev.pax?`<span class="ev-pax-box" style="background:${dr.color};color:${dr.text};border:1px solid ${dr.hdr}">${ev.pax}</span>`:''}</div>`;
+    if(ev.tel)body+=`<div class="ev-row"><span style="opacity:.7">📞</span><span class="ev-text">${ev.tel}</span></div>`;
+    if(ev.agence)body+=`<div class="ev-agence" style="background:rgba(0,0,0,0.06);border-left-color:${dr.hdr}">🏢 ${ev.agence}</div>`;
+    if(ev.note)body+=`<div class="ev-note" style="background:rgba(0,0,0,0.07);border-left-color:${dr.hdr}">💬 ${ev.note}</div>`;
+  } else {
+    body+=`<div class="ev-client-row"><span class="ev-client-name">${ev.client||''}</span>${ev.pax?`<span class="ev-pax-box" style="background:${dr.color};color:${dr.text};border:1px solid ${dr.hdr}">${ev.pax}</span>`:''}</div>`;
+    body+=`<div class="ev-row" style="font-size:9px;opacity:.8"><span class="ev-text">${ev.pickup||''}</span></div>`;
+  }
+  return `<div class="ev-block" style="top:${ev.start*PX}px;height:${Math.max(evH,20)}px;left:${left}px;width:${sw}px;background:${dr.bg}" onclick="event.stopPropagation();openEdit('${ev.id}')">
+    <div class="ev-hdr" style="background:${dr.hdr}"><span class="ev-type">${ev.type}</span><span class="ev-times">${fmt(ev.start)}→${fmt(ev.end)}</span></div>
+    <div class="ev-body" style="color:${dr.text}">${body}</div>
+  </div>`;
+}
+
+function renderDay(){
+  const d=selDs();const dayEvs=evDay(d);
+  const totalH=24*HOUR_PX;const now=new Date();
+  const isToday=d===todayDs();const nowM=now.getHours()*60+now.getMinutes();
+  const groups=[];
+  DRIVERS.forEach(dr=>{const drEvs=dayEvs.filter(e=>e.driver===dr.id);if(drEvs.length)groups.push({dr,layout:layoutEvents(drEvs)});});
+  let h=`<div style="display:flex;height:${totalH}px;min-width:max-content">`;
+  h+=timeColHTML(totalH);
+  if(!groups.length){
+    h+=`<div style="flex:1;min-width:${MIN_COL_W}px;position:relative;height:${totalH}px;cursor:crosshair" onclick="openNewAt(event,'d1','${d}')">${gridLines()}${isToday?`<div class="now-line" style="top:${nowM*PX}px"><div class="now-dot"></div></div>`:''}</div>`;
+  } else {
+    groups.forEach(g=>{
+      const nSub=Math.max(...g.layout.map(x=>x.totalCols));
+      const colW=MIN_COL_W*nSub;
+      h+=`<div style="width:${colW}px;min-width:${colW}px;border-right:1px solid #e5e7eb;border-top:3px solid ${g.dr.hdr};position:relative;height:${totalH}px;cursor:crosshair" onclick="openNewAt(event,'${g.dr.id}','${d}')">`;
+      h+=gridLines();
+      if(isToday)h+=`<div class="now-line" style="top:${nowM*PX}px"><div class="now-dot"></div></div>`;
+      g.layout.forEach(item=>{h+=evHTML(item.ev,g.dr,item.col,item.totalCols,colW);});
+      h+=`</div>`;
+    });
+  }
+  h+=`</div>`;
+  const va=document.getElementById('view-area');va.innerHTML=h;
+  setTimeout(()=>{va.scrollTop=isToday?Math.max(0,nowM*PX-120):8*HOUR_PX;},50);
+}
+
+function renderMultiDay(days){
+  const MINI_H=44;const tds=todayDs();
+  let h=`<div style="display:grid;grid-template-columns:${TW}px repeat(${days.length},1fr);min-width:${TW+days.length*120}px">`;
+  h+=`<div style="padding:5px;border-bottom:1px solid #e5e7eb;border-right:1px solid #e5e7eb;background:#fff;position:sticky;top:0;z-index:10"></div>`;
+  days.forEach(d=>{
+    const dstr=dsFromParts(d.getFullYear(),d.getMonth(),d.getDate());const isT=dstr===tds;
+    h+=`<div style="padding:5px 4px;text-align:center;border-bottom:1px solid #e5e7eb;border-right:1px solid #e5e7eb;background:${isT?'#dbeafe':'#fff'};position:sticky;top:0;z-index:10;cursor:pointer" onclick="selectDay(${d.getFullYear()},${d.getMonth()},${d.getDate()});setView(1)">
+      <div style="font-size:10px;color:${isT?'#1e40af':'#9ca3af'}">${DAYS_SHORT[(d.getDay()+6)%7]}</div>
+      <div style="font-size:15px;font-weight:500;color:${isT?'#1e40af':'#374151'}">${d.getDate()}</div></div>`;
+  });
+  for(let hr=0;hr<24;hr++){
+    h+=`<div style="font-size:10px;color:#9ca3af;text-align:right;padding:2px 5px;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;height:${MINI_H}px;display:flex;align-items:flex-start;justify-content:flex-end">${String(hr).padStart(2,'0')}h</div>`;
+    days.forEach(d=>{
+      const dstr=dsFromParts(d.getFullYear(),d.getMonth(),d.getDate());
+      const slotEvs=events.filter(e=>e.date===dstr&&e.start<(hr+1)*60&&e.end>hr*60);
+      h+=`<div style="height:${MINI_H}px;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;padding:2px;overflow:hidden;cursor:pointer" onclick="selectDay(${d.getFullYear()},${d.getMonth()},${d.getDate()});setView(1)">`;
+      slotEvs.forEach(ev=>{const dr=DRIVERS.find(x=>x.id===ev.driver)||DRIVERS[5];h+=`<div style="background:${dr.color};color:${dr.text};border-radius:3px;padding:1px 4px;font-size:10px;font-weight:500;margin-bottom:1px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${ev.type} — ${ev.client}</div>`;});
+      h+=`</div>`;
+    });
+  }
+  h+=`</div>`;document.getElementById('view-area').innerHTML=h;
+}
+
+function renderMonthView(){
+  const first=new Date(selYear,selMonth,1);const last=new Date(selYear,selMonth+1,0);
+  const startDow=(first.getDay()+6)%7;const tds=todayDs();
+  let h=`<div style="display:grid;grid-template-columns:repeat(7,1fr)">`;
+  DAYS_SHORT.forEach(d=>h+=`<div style="padding:5px 6px;font-size:11px;font-weight:500;color:#9ca3af;text-align:center;border-bottom:1px solid #e5e7eb;border-right:1px solid #e5e7eb">${d}</div>`);
+  const cells=[];
+  for(let i=0;i<startDow;i++){const dd=new Date(selYear,selMonth,1-startDow+i);cells.push({y:dd.getFullYear(),m:dd.getMonth(),d:dd.getDate(),other:true});}
+  for(let day=1;day<=last.getDate();day++){cells.push({y:selYear,m:selMonth,d:day,other:false});}
+  while(cells.length%7!==0){const lc=cells[cells.length-1];const nd=new Date(lc.y,lc.m,lc.d+1);cells.push({y:nd.getFullYear(),m:nd.getMonth(),d:nd.getDate(),other:true});}
+  cells.forEach(({y,m,d,other})=>{
+    const dstr=dsFromParts(y,m,d);const isT=dstr===tds;const dayEvs=evDay(dstr);
+    h+=`<div style="min-height:70px;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;padding:3px;opacity:${other?0.35:1};cursor:pointer" onclick="selectDay(${y},${m},${d});setView(1)">`;
+    h+=`<div style="width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;margin-bottom:2px;background:${isT?'#1a6ab5':'transparent'};color:${isT?'#fff':'#9ca3af'}">${d}</div>`;
+    dayEvs.slice(0,3).forEach(ev=>{const dr=DRIVERS.find(x=>x.id===ev.driver)||DRIVERS[5];h+=`<div style="background:${dr.color};color:${dr.text};border-radius:2px;padding:1px 4px;font-size:10px;font-weight:500;margin-bottom:1px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${ev.type} ${ev.client.slice(0,12)}</div>`;});
+    if(dayEvs.length>3)h+=`<div style="font-size:9px;color:#9ca3af">+${dayEvs.length-3}</div>`;
+    h+=`</div>`;
+  });
+  h+=`</div>`;document.getElementById('view-area').innerHTML=h;
+}
+
+// ============================================
+// SEARCH
+// ============================================
+function openSearch(){document.getElementById('search-bg').classList.add('open');setTimeout(()=>document.getElementById('search-input').focus(),100);}
+function closeSearch(){
+  document.getElementById('search-bg').classList.remove('open');
+  document.getElementById('search-input').value='';
+  document.getElementById('search-results').innerHTML='<div class="search-empty">Tapez pour rechercher</div>';
+  document.getElementById('search-count').textContent='';
+}
+function setPeriod(p){
+  searchPeriod=p;
+  document.getElementById('pbtn-all').classList.toggle('active',p==='all');
+  document.getElementById('pbtn-custom').classList.toggle('active',p==='custom');
+  document.getElementById('period-dates').style.display=p==='custom'?'flex':'none';
+  doSearch();
+}
+function hl(text,query){
+  if(!query||!text)return text||'';
+  const escaped=query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return String(text).replace(new RegExp(`(${escaped})`,'gi'),'<span class="highlight">$1</span>');
+}
+function doSearch(){
+  const q=document.getElementById('search-input').value.trim().toLowerCase();
+  if(!q){document.getElementById('search-results').innerHTML='<div class="search-empty">Tapez pour rechercher</div>';document.getElementById('search-count').textContent='';return;}
+  const fromVal=document.getElementById('date-from').value;
+  const toVal=document.getElementById('date-to').value;
+  let filtered=events.filter(ev=>{
+    if(searchPeriod==='custom'){if(fromVal&&ev.date<fromVal)return false;if(toVal&&ev.date>toVal)return false;}
+    const dr=DRIVERS.find(x=>x.id===ev.driver)||{name:''};
+    return [ev.client,ev.type,ev.pickup,ev.dropoff,ev.agence,ev.note,dr.name].join(' ').toLowerCase().includes(q);
+  }).sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('search-count').textContent=filtered.length?`${filtered.length} résultat${filtered.length>1?'s':''}` :'';
+  if(!filtered.length){document.getElementById('search-results').innerHTML=`<div class="search-empty">Aucun résultat pour "<strong>${q}</strong>"</div>`;return;}
+  document.getElementById('search-results').innerHTML=filtered.map(ev=>{
+    const dr=DRIVERS.find(x=>x.id===ev.driver)||DRIVERS[5];
+    const dateObj=new Date(ev.date+'T00:00:00');
+    const dateFmt=`${DAYS_L[dateObj.getDay()].slice(0,3)}. ${dateObj.getDate()} ${MONTHS[dateObj.getMonth()].slice(0,3)} ${dateObj.getFullYear()}`;
+    return `<div class="result-item" onclick="goToResult('${ev.date}')">
+      <div class="result-color" style="background:${dr.hdr}"></div>
+      <div class="result-main">
+        <div class="result-top"><span class="result-type">${hl(ev.type,q)}</span><span class="result-date">${dateFmt}</span><span class="result-driver" style="background:${dr.color};color:${dr.text}">${hl(dr.name,q)}</span></div>
+        <div class="result-client">${hl(ev.client,q)}${ev.pax?` <span style="font-size:10px;color:#9ca3af">· ${ev.pax} PAX</span>`:''}</div>
+        <div class="result-sub">${hl(ev.pickup,q)} → ${hl(ev.dropoff,q)}${ev.agence?` · ${hl(ev.agence,q)}`:''}</div>
+      </div>
+      <div style="color:#9ca3af;font-size:14px">›</div>
+    </div>`;
+  }).join('');
+}
+function goToResult(dateStr){
+  const p=dateStr.split('-');selYear=+p[0];selMonth=+p[1]-1;selDay=+p[2];
+  calYear=selYear;calMonth=selMonth;viewDays=1;
+  ['3','7','30'].forEach(v=>{const b=document.getElementById('vbtn-'+v);if(b)b.classList.remove('active');});
+  closeSearch();renderCal();updateNavDate();renderView();
+}
+
+// ============================================
+// MODAL
+// ============================================
+function timeOpts(){let s='';for(let m=0;m<24*60;m+=15)s+=`<option value="${m}">${fmt(m)}</option>`;return s;}
+function driverOpts(sel='d1'){return DRIVERS.map(d=>`<option value="${d.id}"${d.id===sel?' selected':''}>${d.name}</option>`).join('');}
+
+function resetModal(){
+  document.getElementById('f-driver').innerHTML=driverOpts();
+  document.getElementById('f-start').innerHTML=timeOpts();
+  document.getElementById('f-end').innerHTML=timeOpts();
+  document.getElementById('f-type').value='TRSF IN';
+  document.getElementById('f-date').value=selDs();
+  document.getElementById('f-start').value=480;document.getElementById('f-end').value=540;
+  ['f-pickup','f-dropoff','f-client','f-pax','f-tel','f-agence','f-note','f-notes-admin','f-st-factu','f-factu-my'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-achat').value='';document.getElementById('f-vente').value='';
+  document.getElementById('f-marge').textContent='— €';document.getElementById('f-marge').style.color='#059669';
+  document.getElementById('f-date-enc').value='';document.getElementById('f-st-date').value='';
+  document.querySelectorAll('input[name="encaiss"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[name="st-paie"]').forEach(r=>r.checked=false);
+}
+
+function openNew(){resetModal();editId=null;document.getElementById('modal-title').textContent='Nouvelle course';document.getElementById('btn-del').style.display='none';document.getElementById('modal-bg').classList.add('open');}
+
+function openNewAt(e,dId,dstr){
+  const va=document.getElementById('view-area');
+  const vaRect=va.getBoundingClientRect();
+  const relY=e.clientY-vaRect.top+va.scrollTop-3;
+  const mins=snap(Math.max(0,Math.floor(relY/PX)));
+  resetModal();editId=null;
+  document.getElementById('modal-title').textContent='Nouvelle course';
+  document.getElementById('btn-del').style.display='none';
+  document.getElementById('f-driver').innerHTML=driverOpts(dId);
+  document.getElementById('f-date').value=dstr;
+  document.getElementById('f-start').value=Math.min(mins,1425);
+  document.getElementById('f-end').value=Math.min(mins+60,1440);
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function openEdit(id){
+  const ev=events.find(e=>e.id===id);if(!ev)return;
+  resetModal();editId=id;
+  document.getElementById('modal-title').textContent='Modifier la course';
+  document.getElementById('btn-del').style.display='';
+  document.getElementById('f-driver').innerHTML=driverOpts(ev.driver);
+  document.getElementById('f-type').value=ev.type||'TRSF IN';
+  document.getElementById('f-date').value=ev.date;
+  document.getElementById('f-start').value=ev.start;
+  document.getElementById('f-end').value=ev.end;
+  ['pickup','dropoff','client','pax','tel','agence','note'].forEach(k=>{document.getElementById('f-'+k).value=ev[k]||'';});
+  if(ev.admin){
+    document.getElementById('f-achat').value=ev.admin.achat||'';
+    document.getElementById('f-vente').value=ev.admin.vente||'';
+    calcMarge();
+    const rb=document.querySelector(`input[name="encaiss"][value="${ev.admin.encaiss}"]`);if(rb)rb.checked=true;
+    document.getElementById('f-date-enc').value=ev.admin.dateEnc||'';
+    document.getElementById('f-factu-my').value=ev.admin.factuMy||'';
+    document.getElementById('f-st-factu').value=ev.admin.factuSt||'';
+    document.getElementById('f-st-date').value=ev.admin.dateSt||'';
+    const rb2=document.querySelector(`input[name="st-paie"][value="${ev.admin.paieSt}"]`);if(rb2)rb2.checked=true;
+    document.getElementById('f-notes-admin').value=ev.admin.notes||'';
+  }
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+function calcMarge(){
+  const a=parseFloat(document.getElementById('f-achat').value)||0;
+  const v=parseFloat(document.getElementById('f-vente').value)||0;
+  const m=v-a;const el=document.getElementById('f-marge');
+  el.textContent=m.toFixed(0)+' €';el.style.color=m>=0?'#059669':'#dc2626';
+}
+
+async function saveEv(){
+  const start=+document.getElementById('f-start').value;
+  const end=+document.getElementById('f-end').value;
+  if(end<=start){alert("L'heure de fin doit être après le début.");return;}
+  const encaiss=(document.querySelector('input[name="encaiss"]:checked')||{}).value||'';
+  const paieSt=(document.querySelector('input[name="st-paie"]:checked')||{}).value||'';
+  const evDate=document.getElementById('f-date').value;
+  const ev={
+    id:editId||('e'+Date.now()),
+    driver:document.getElementById('f-driver').value,
+    type:document.getElementById('f-type').value,
+    date:evDate,start,end,
+    pickup:document.getElementById('f-pickup').value,
+    dropoff:document.getElementById('f-dropoff').value,
+    client:document.getElementById('f-client').value,
+    pax:document.getElementById('f-pax').value,
+    tel:document.getElementById('f-tel').value,
+    agence:document.getElementById('f-agence').value,
+    note:document.getElementById('f-note').value,
+    admin:{
+      achat:document.getElementById('f-achat').value,
+      vente:document.getElementById('f-vente').value,
+      encaiss,dateEnc:document.getElementById('f-date-enc').value,
+      factuMy:document.getElementById('f-factu-my').value,
+      factuSt:document.getElementById('f-st-factu').value,
+      dateSt:document.getElementById('f-st-date').value,
+      paieSt,notes:document.getElementById('f-notes-admin').value
+    }
+  };
+  closeModal();
+  if(editId)events=events.map(e=>e.id===editId?ev:e);else events.push(ev);
+  if(evDate!==selDs()){const p=evDate.split('-');selYear=+p[0];selMonth=+p[1]-1;selDay=+p[2];calYear=selYear;calMonth=selMonth;}
+  renderCal();updateNavDate();renderView();
+  await saveToSheets(ev);
+}
+
+async function deleteEv(){
+  if(!editId)return;
+  const id=editId;
+  closeModal();
+  events=events.filter(e=>e.id!==id);
+  renderCal();renderView();
+  await deleteFromSheets(id);
+}
+
+// ============================================
+// INIT
+// ============================================
+document.getElementById('f-driver').innerHTML=driverOpts();
+document.getElementById('f-start').innerHTML=timeOpts();
+document.getElementById('f-end').innerHTML=timeOpts();
+const n=new Date();
+selYear=n.getFullYear();selMonth=n.getMonth();selDay=n.getDate();
+calYear=selYear;calMonth=selMonth;
+buildLegend();updateNavDate();
+loadFromSheets();
+</script>
 </body>
 </html>
